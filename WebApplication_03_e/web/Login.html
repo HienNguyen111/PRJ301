@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Login for Student</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <form action="LoginServlet" method="post">
+            IDStudent: <input type="text" name="IDStudent" />             
+            <br/>
+            Fullname: <input type="text" name="Fullname" />
+            <br/>
+            
+            Gender:
+            <input type="radio" name="gender" id="gender_male" value="male" checked="checked" /> Male
+            <input type="radio" name="gender" id="gender_female" value="female" checked="checked" /> Female
+            <br/>
+            
+            <input type="submit" value="Login" /> 
+           
+        </form>
+    </body>
+</html>
