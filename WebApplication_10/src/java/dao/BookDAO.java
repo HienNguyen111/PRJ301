@@ -1,0 +1,82 @@
+package dao;
+
+import dto.BookDTO;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import utils.DBUtils;
+
+public class BookDAO implements IDAO<BookDTO, String> {
+
+    @Override
+    public boolean create(BookDTO entity) {
+        return false;
+    }
+
+    @Override
+    public List<BookDTO> readAll() {
+        return null;
+    }
+
+    @Override
+    public BookDTO readById(String id) {
+        return null;
+    }
+
+    @Override
+    public boolean update(BookDTO entity) {
+        return false;
+    }
+
+    @Override
+    public boolean delete(String id) {
+        return false;
+    }
+
+    @Override
+    public List<BookDTO> search(String searchTerm) {
+        return null;
+    }
+    
+    
+    // Các phương thức:
+    
+    // Tìm sách bằng title:
+    public List<BookDTO> searchByTitle(String searchTerm) {
+        
+        String sql ="SELECT * FROM tblBooks WHERE title LIKE ? ";
+        List<BookDTO> list = new ArrayList<>();
+        
+        try {
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, "%" + searchTerm + "%");
+            
+            // executeQuery() : dùng khi ko làm thay đổi dữ liệu
+            // executeUpdate() : dùng khi update, delete, insert
+            ResultSet rs = ps.executeQuery();
+            
+            // Lấy Book (đúng theo yêu cầu) ở trong SQL
+            while(rs.next()) {
+                BookDTO book = new BookDTO(
+                                    rs.getString("BookID"), 
+                                    rs.getString("Title"), 
+                                    rs.getString("Author"), 
+                                    rs.getInt("PublishYear"), 
+                                    rs.getDouble("Price"), 
+                                    rs.getInt("Quantity"));
+                // Ép Book vào list để in ra
+                list.add(book);
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }      
+        return list;
+    }
+    
+    
+    
+    
+}
