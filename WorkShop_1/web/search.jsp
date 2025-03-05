@@ -135,6 +135,7 @@
                     padding: 8px 10px;
                 }
             }
+            
         </style> 
     
     <body>
@@ -182,7 +183,15 @@
                                 <th>Status</th>
                                 <th>Estimated Launch</th>
                                 <% if(AuthUtils.isAdmin(session)){ %>
-                                    <th>Update Status</th>
+                                    <th>Update Status
+                                    <%
+                                        String messageUpdate = request.getAttribute("messageUpdate") + "";
+                                    %>
+                                    <span style="color: #FAD105; font-weight: bold; margin-left: 10px;">
+                                        <%= messageUpdate.equals("null") ? "" : messageUpdate %>
+                                    </span>
+
+                                    </th>
                                 <% } %>
                             </tr>
                         </thead>
@@ -213,11 +222,8 @@
                                             <button type="submit" style="border: none; background: none; cursor: pointer;">
                                                 <img src="assets/images/fix.png" style="height: 25px; display: block; margin: auto;">
                                             </button>
-                                            
-                                            <%
-                                                String messageUpdate = request.getAttribute("messageUpdate") + "";
-                                            %>
-                                                <%=messageUpdate.equals("null")?"":messageUpdate%>
+                                           
+                      
                                             </form>
                                         </td>
                                         <% } %>

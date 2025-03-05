@@ -108,17 +108,17 @@ public class MainController extends HttpServlet {
                 }else if(action.equals("updateStatus")){
                     HttpSession session = request.getSession();
                     if (AuthUtils.isAdmin(session)) {
+                        
                         int project_id = Integer.parseInt(request.getParameter("project_id")); // Lấy Project_id (ở search.jsp) để update
                         String status_update = request.getParameter("status_update");
-                        projectDAO.updateStatus(project_id, status_update);
-
+                        
                         boolean success = projectDAO.updateStatus(project_id, status_update);
 
-                        if (success) {
-                            request.setAttribute("messageUpdate", "Update successful!");
-                        } else {
-                            request.setAttribute("messageUpdate", "Update failed!");
-                        }
+                        // Tạo thông báo cập nhật
+                        String message = success ? "Update successful!" : "Update failed!";
+                        // Lưu thông báo vào session (để tránh mất khi redirect)
+                        request.setAttribute("messageUpdate", message);
+
                         // search
                         search(request, response);
                         url = "search.jsp";
