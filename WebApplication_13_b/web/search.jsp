@@ -4,6 +4,7 @@
     Author     : Admin
 --%>
 
+<%@page import="utils.AuthUtils"%>
 <%@page import="dto.BookDTO"%>
 <%@page import="java.util.List"%>
 <%@page import="dto.UserDTO"%>
@@ -65,6 +66,61 @@
                     padding: 8px 10px;
                 }
             }
+            
+            /* Search section styles */
+            .search-section {
+                background-color: #fff;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                display: flex;
+                align-items: center;
+            }
+
+            .search-section form {
+                display: flex;
+                align-items: center;
+                flex-grow: 1;
+            }
+
+            .search-section label {
+                margin-right: 10px;
+                font-weight: bold;
+                color: #333;
+            }
+
+            .search-input {
+                flex-grow: 1;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                margin-right: 10px;
+                transition: border-color 0.3s;
+            }
+
+            .search-input:focus {
+                border-color: #009879;
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(0, 152, 121, 0.2);
+            }
+
+            .search-btn {
+                background-color: #009879;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 10px 15px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: background-color 0.3s;
+            }
+
+            .search-btn:hover {
+                background-color: #00806a;
+            }
+
         </style> 
     
     <body>
@@ -72,41 +128,32 @@
         <%@include file="header.jsp" %>
         <div style="min-height: 500px; padding: 10px">
             
-            <%
-                if(session.getAttribute("user") != null){
-                    UserDTO user = (UserDTO)session.getAttribute("user");
+            <%                if (session.getAttribute("user") != null) {
+                    UserDTO user = (UserDTO) session.getAttribute("user");
             %>
-        
-            <h1> Welcome <%=user.getFullName()%></h1>
             
-            <form action="MainController">
-                <input type="hidden" name="action" value="logout"/>
-                <input type="submit" value="Logout"/>
-            </form>
-            
-            <br/>
-            <hr/>
-            <br/>
             
             <%
                 String searchTerm = request.getAttribute("searchTerm") + "";
                 searchTerm = searchTerm.equals("null") ?"" :searchTerm;
             %>
             
-            <form action="MainController">
-                <input type="hidden" name="action" value="search"/>
-                Search Books : <input type="text" name="searchTerm" value="<%=searchTerm%>"/>
-                <input type="submit" value="Search"/>
-            </form>
-            <br/>
-              
+            <div class="search-section">
+                <form action="MainController">
+                    <input type="hidden" name="action" value="search"/>
+                    <label for="searchInput">Search Books:</label>
+                    <input type="text" id="searchInput" name="searchTerm" value="<%=searchTerm%>" class="search-input" placeholder="Enter book title, author or ID..."/>
+                    <input type="submit" value="Search" class="search-btn"/>
+                </form>
+            </div>
+            
+                    
+            <% if(AuthUtils.isAdmin(session)){ %>
             <a href="bookForm.jsp" style="display: inline-flex; align-items: center; text-decoration: none; padding: 8px 12px; background-color: #009879; color: white; border-radius: 5px; font-weight: bold; transition: 0.3s;">
                 <img src="assets/images/Add.png" alt="Add" style="height: 20px; margin-right: 8px;">
                 Add New Book
             </a>
-
-            <br/>
-            <br/>
+            <% } %>
             
             <%
                 if(request.getAttribute("books") != null){
@@ -122,7 +169,9 @@
                                 <th>PublishYear</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
+                                <% if(AuthUtils.isAdmin(session)){ %>
                                 <th>Action</th>
+                                <% } %>
                             </tr>
                         </thead>
                         
@@ -137,20 +186,20 @@
                                         <td> <%=b.getPublishYear()%> </td>
                                         <td> <%=b.getPrice()%> </td>
                                         <td> <%=b.getQuantity()%> </td>
+                                        <% if(AuthUtils.isAdmin(session)){ %>
                                         <td> <a href="MainController?action=delete&id=<%=b.getBookID()%>&searchTerm=<%=searchTerm%>">
                                                 <img src="assets/images/delete-icon.png" style="height: 25px" />
                                         </a> </td>
+                                        <% } %>
                                     </tr>
                             <%
                                 }
                             %>
                         </tbody>
                     </table>
-            <%
-                }
-            %>
-            
-            <% }else{%>
+                        
+            <% }
+            }else{ %>
                 You do not have permission to ascess this content.
             <% } %>
             

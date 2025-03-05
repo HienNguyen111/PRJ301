@@ -3,15 +3,15 @@
     Created on : Feb 27, 2025, 10:33:39 AM
     Author     : Admin
 --%>
-<%@page import="dto.UserDTO"%>
-<%@page import="dto.BookDTO"%>
-<%@page import="java.awt.print.Book"%>
+
+<%@page import="utils.AuthUtils"%>
+<%@page import="dto.SUp_ProjectDTO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Thêm sách mới</title>
+        <title>Thêm dự án mới</title>
         
         <style>
             * {
@@ -165,93 +165,88 @@
         
     </head>
     <body>
-        
         <%@include file="header.jsp" %>
-        
         <div class="page-content">
-        <% if(session.getAttribute("user") != null){ 
-                UserDTO user1 = (UserDTO)session.getAttribute("user");
-                if(user1.getRoleID().equals("AD")){
-        %>
-                                
-                                
-        <%
-            BookDTO book = new BookDTO();
-            try {
-                book = (BookDTO) request.getAttribute("book");
-            } catch (Exception e) {
-                book = new BookDTO();
-            }
-            if (book == null) {
-                book = new BookDTO();
-            }
-            // In ra thông báo lỗi
-            String txtBookID_error = request.getAttribute("txtBookID_error") + "";
-            txtBookID_error = txtBookID_error.equals("null") ? "" : txtBookID_error;
-            String txtTitle_error = request.getAttribute("txtTitle_error") + "";
-            txtTitle_error = txtTitle_error.equals("null") ? "" : txtTitle_error;
-            String txtAuthor_error = request.getAttribute("txtAuthor_error") + "";
-            txtAuthor_error = txtAuthor_error.equals("null") ? "" : txtAuthor_error;
+         
             
-            String txtPublishYear_error = request.getAttribute("txtPublishYear_error") + "";
-            txtPublishYear_error = txtPublishYear_error.equals("null") ? "" : txtPublishYear_error;
-            String txtPrice_error = request.getAttribute("txtPrice_error") + "";
-            txtPrice_error = txtPrice_error.equals("null") ? "" : txtPrice_error;
-            String txtQuantity_error = request.getAttribute("txtQuantity_error") + "";
-            txtQuantity_error = txtQuantity_error.equals("null") ? "" : txtQuantity_error;
+        <% if (AuthUtils.isLoggedIn(session)) {
+                UserDTO user = (UserDTO) session.getAttribute("user");
+                if (AuthUtils.isAdmin(session)) {
+        %>
+        
+        
+        <%
+            SUp_ProjectDTO pj = new SUp_ProjectDTO();
+            try{
+                pj = (SUp_ProjectDTO) request.getAttribute("pj");
+            }catch (Exception e) {
+                pj = new SUp_ProjectDTO();
+            }
+            if(pj == null) {
+                pj = new SUp_ProjectDTO();
+            }
+            
+            // In ra thông báo lỗi
+            String txtProjectID_error = request.getAttribute("txtProjectID_error") + "";
+            txtProjectID_error = txtProjectID_error.equals("null") ? "" : txtProjectID_error;
+            
+            String txtProjectName_error = request.getAttribute("txtProjectName_error") + "";
+            txtProjectName_error = txtProjectName_error.equals("null") ? "" : txtProjectName_error;
+            
+            String txtDescription_error = request.getAttribute("txtDescription_error") + "";
+            txtDescription_error = txtDescription_error.equals("null") ? "" : txtDescription_error;
+            
+            String txtStatus_error = request.getAttribute("txtStatus_error") + "";
+            txtStatus_error = txtStatus_error.equals("null") ? "" : txtStatus_error;
+            
+            String txtEstimatedLaunch_error = request.getAttribute("txtEstimatedLaunch_error") + "";
+            txtEstimatedLaunch_error = txtEstimatedLaunch_error.equals("null") ? "" : txtEstimatedLaunch_error;
+            
         %>
         
         
         <div class="form-container">
-            <h1>Book Information</h1>
+            <h1>Project Information</h1>
             <form action="MainController" method="post">
-                <input type="hidden" name="action" value="add_book"/>
+                <input type="hidden" name="action" value="add_project"/>
                 
                 <div class="form-group">
-                    <label for="txtBookID">Book ID:</label>
-                    <input type="text" id="txtBookID" name="txtBookID" value="<%=book.getBookID()%>"/>
-                    <% if (!txtBookID_error.isEmpty()) { %>
-                        <div class="error-message"><%=txtBookID_error%></div>
+                    <label for="txtBookID">Project ID:</label>
+                    <input type="number" id="txtProjectID" name="txtProjectID" value="<%=pj.getProject_id()%>"/>
+                    <% if (!txtProjectID_error.isEmpty()) { %>
+                        <div class="error-message"><%=txtProjectID_error%></div>
                     <% } %>
                 </div>
                 
                 <div class="form-group">
-                    <label for="txtTitle">Title:</label>
-                    <input type="text" id="txtTitle" name="txtTitle" value="<%=book.getTitle()%>"/>
-                    <% if (!txtTitle_error.isEmpty()) { %>
-                        <div class="error-message"><%=txtTitle_error%></div>
+                    <label for="txtProjectName">Project Name:</label>
+                    <input type="text" id="txtProjectName" name="txtProjectName" value="<%=pj.getProject_name()%>"/>
+                    <% if (!txtProjectName_error.isEmpty()) { %>
+                        <div class="error-message"><%=txtProjectName_error%></div>
                     <% } %>
                 </div>
                 
                 <div class="form-group">
-                    <label for="txtAuthor">Author:</label>
-                    <input type="text" id="txtAuthor" name="txtAuthor" value="<%=book.getAuthor()%>"/>
-                    <% if (!txtAuthor_error.isEmpty()) { %>
-                        <div class="error-message"><%=txtAuthor_error%></div>
+                    <label for="txtDescription">Description:</label>
+                    <input type="text" id="txtDescription" name="txtDescription" value="<%=pj.getDescription()%>"/>
+                    <% if (!txtDescription_error.isEmpty()) { %>
+                        <div class="error-message"><%=txtDescription_error%></div>
                     <% } %>
                 </div>
                 
                 <div class="form-group">
-                    <label for="txtPublishYear">Publish Year:</label>
-                    <input type="number" id="txtPublishYear" name="txtPublishYear" value="<%=book.getPublishYear()%>"/>
-                    <% if (!txtPublishYear_error.isEmpty()) { %>
-                        <div class="error-message"><%=txtPublishYear_error%></div>
+                    <label for="txtStatus">Status:</label>
+                    <input type="text" id="txtStatus" name="txtStatus" value="<%=pj.getStatus()%>"/>
+                    <% if (!txtStatus_error.isEmpty()) { %>
+                        <div class="error-message"><%=txtStatus_error%></div>
                     <% } %>
                 </div>
                 
                 <div class="form-group">
-                    <label for="txtPrice">Price:</label>
-                    <input type="number" id="txtPrice" name="txtPrice" value="<%=book.getPrice()%>"/>
-                    <% if (!txtPrice_error.isEmpty()) { %>
-                        <div class="error-message"><%=txtPrice_error%></div>
-                    <% } %>
-                </div>
-                
-                <div class="form-group">
-                    <label for="txtQuantity">Quantity:</label>
-                    <input type="number" id="txtQuantity" name="txtQuantity" value="<%=book.getQuantity()%>"/>
-                    <% if (!txtQuantity_error.isEmpty()) { %>
-                        <div class="error-message"><%=txtQuantity_error%></div>
+                    <label for="txtEstimatedLaunch">Estimated Launch:</label>
+                    <input type="text" id="txtEstimatedLaunch" name="txtEstimatedLaunch" value="<%=pj.getEstimated_launch()%>"/>
+                    <% if (!txtEstimatedLaunch_error.isEmpty()) { %>
+                        <div class="error-message"><%=txtEstimatedLaunch_error%></div>
                     <% } %>
                 </div>
                 
@@ -260,8 +255,8 @@
                     <input type="reset" value="Reset"/>
                 </div>
             </form>
-            
-            <a href="MainController?action=search" class="back-link">Back to Book List</a>
+
+                <a href="MainController?action=search" class="back-link">Back to Book List</a>
             </div>
             <%} else {%>
             <div class="form-container error-container">
@@ -277,8 +272,8 @@
                 <a href="login.jsp" class="back-link">Go to Login</a>
             </div>
             <%}%>
-        </div> 
-        
+        </div>
+       
         <jsp:include page="footer.jsp"/>
     </body>
 </html>

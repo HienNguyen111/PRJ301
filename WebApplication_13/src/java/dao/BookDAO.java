@@ -137,7 +137,7 @@ public class BookDAO implements IDAO<BookDTO, String> {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, id);
             int i = ps.executeUpdate();
-            return i>0;
+            return i > 0;
             
         } catch (Exception e) {
             System.out.println(e.toString());

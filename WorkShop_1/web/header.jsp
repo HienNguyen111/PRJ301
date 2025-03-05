@@ -1,9 +1,3 @@
-<%-- 
-    Document   : header
-    Created on : Feb 25, 2025, 6:16:40 PM
-    Author     : Admin
---%>
-
 <%@page import="dto.UserDTO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <style>
@@ -14,7 +8,7 @@
     }
 
     .header {
-        background-color: #2c3e50;
+        background-color: #FAD105;
         padding: 1rem 0;
         width: 100%;
         top: 0;
@@ -122,11 +116,10 @@
 
     <div class="container">
         <nav class="nav">
-            <a href="#" class="logo">BOOKSHOP ONLINE</a>
+            <a href="#" class="logo">Startup Projects</a>
             <ul class="menu">
                 <li class="menu-item"><a href="#">Trang chủ</a></li>
-                <li class="menu-item"><a href="#">Sản phẩm</a></li>
-                <li class="menu-item"><a href="#">Giỏ hàng</a></li>
+                <li class="menu-item"><a href="#">Các dự án</a></li>
                 <li class="menu-item"><a href="#">Liên hệ</a></li>
             </ul>
             <div class="right-section">
@@ -134,12 +127,12 @@
                     <input type="text" class="search-input" placeholder="Tìm kiếm...">
                     <button class="search-button">🔍</button>
                 </div>
-                <%
-                    if(session.getAttribute("user") != null){
+                <%                    
+                    if (session.getAttribute("user") != null) {
                         UserDTO userHeader = (UserDTO) session.getAttribute("user");
                 %>
                 <div class="user-section">
-                    <span class="welcome-text">Xin chào, <span class="user-name"><%=userHeader.getFullName()%></span>!</span>
+                    <span class="welcome-text">Xin chào, <span class="user-name"><%=userHeader.getName()%></span>!</span>
                     <form action="MainController" method="post" style="margin: 0;">
                         <input type="hidden" name="action" value="logout"/>
                         <input type="submit" value="Đăng xuất" class="logout-btn"/>
@@ -149,7 +142,5 @@
             </div>
         </nav>
     </div>
-    
-    
-    
+            
 </header>

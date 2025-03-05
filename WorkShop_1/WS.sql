@@ -11,11 +11,11 @@ CREATE TABLE tblUsers (
 
 -- Startup Projects Table
 CREATE TABLE tblStartupProjects (
-    project_id INT PRIMARY KEY,
-    project_name VARCHAR(100) NOT NULL,
+    Project_id INT PRIMARY KEY,
+    Project_name VARCHAR(100) NOT NULL,
     Description TEXT,
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Ideation', 'Development', 'Launch', 'Scaling')),
-    estimated_launch DATE NOT NULL
+    Estimated_launch DATE NOT NULL
 );
 
 
@@ -28,7 +28,7 @@ INSERT INTO tblUsers (Username, Name, Password, Role) VALUES
 
 
 -- Insert additional data into tblStartupProjects
-INSERT INTO tblStartupProjects (project_id, project_name, Description, Status, estimated_launch) VALUES
+INSERT INTO tblStartupProjects (Project_id, Project_name, Description, Status, Estimated_launch) VALUES
 ('001', 'EduFuture', 'An e-learning platform for interactive courses.', 'Ideation', '2025-04-20'),
 ('002', 'AgriTech Solutions', 'A startup developing smart farming technology.', 'Development', '2025-07-15'),
 ('003', 'GreenEnergy', 'A renewable energy solutions company.', 'Launch', '2025-10-05'),

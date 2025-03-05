@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import utils.AuthUtils;
 
 
 @WebServlet(name = "MainController", urlPatterns = {"/MainController"})
@@ -24,17 +25,6 @@ public class MainController extends HttpServlet {
     
     private BookDAO bookDAO = new BookDAO();
     
-    // Phương thức:
-    public UserDTO getUser(String strUserID) {
-        UserDAO udao = new UserDAO();
-        UserDTO user = udao.readById(strUserID);
-        return user;
-    }
-    
-    public boolean isValidLogin(String strUserID, String strPassword) {
-        UserDTO user = getUser(strUserID);
-        return user != null && user.getPassword().equals(strPassword);
-    }
     
     // Tạo hàm search:
     protected void search(HttpServletRequest request, HttpServletResponse response)
@@ -69,10 +59,10 @@ public class MainController extends HttpServlet {
                     String strUserID = request.getParameter("txtUserID");
                     String strPassword = request.getParameter("txtPassword");
                     
-                    if(isValidLogin(strUserID, strPassword)){
+                    if(AuthUtils.isValidLogin(strUserID, strPassword)){
                         url = "search.jsp";
                         // In tên của người đăng nhập ra
-                        UserDTO user = getUser(strUserID);
+                        UserDTO user = AuthUtils.getUser(strUserID);
                         request.getSession().setAttribute("user", user);
                         // search: Hiện sách khi đăng nhập thành công
                         search(request, response);
@@ -87,7 +77,7 @@ public class MainController extends HttpServlet {
                 }else if(action.equals("logout")){
                     // Cần đăng nhập mới logout được
                     HttpSession session = request.getSession();
-                    if(session.getAttribute("user") != null){ 
+                    if(AuthUtils.isLoggedIn(session)){ 
                     request.getSession().invalidate(); // Hủy session = Hủy 1 phiên làm việc
                     url = "login.jsp";
                     }
@@ -96,7 +86,7 @@ public class MainController extends HttpServlet {
                 }else if(action.equals("search")){
                     // Cần đăng nhập mới search được
                     HttpSession session = request.getSession();
-                    if(session.getAttribute("user") != null){ 
+                    if(AuthUtils.isLoggedIn(session)){
                     // search
                     search(request, response);
                     url = "search.jsp";
@@ -106,9 +96,7 @@ public class MainController extends HttpServlet {
                 }else if(action.equals("delete")){
                     // Cần quyền ADMIN để xóa
                     HttpSession session = request.getSession();
-                    if(session.getAttribute("user") != null){ 
-                    UserDTO user = (UserDTO)session.getAttribute("user");
-                    if(user.getRoleID().equals("AD")){
+                    if(AuthUtils.isAdmin(session)){
                         
                     String id = request.getParameter("id"); // Lấy BookID (ở search.jsp) để delete
                     bookDAO.updateQuantityToZero(id); 
@@ -116,15 +104,13 @@ public class MainController extends HttpServlet {
                     // search
                     search(request, response);
                     url = "search.jsp";
-                    }}
+                    }
                     
                 // Thêm sách
                 }else if(action.equals("add_book")){
                     // Cần quyền ADMIN để thêm sách
                     HttpSession session = request.getSession();
-                    if(session.getAttribute("user") != null){ 
-                    UserDTO user = (UserDTO)session.getAttribute("user");
-                    if(user.getRoleID().equals("AD")){
+                    if(AuthUtils.isAdmin(session)){
                         
                     try {
                         String bookID = request.getParameter("txtBookID");
@@ -176,7 +162,7 @@ public class MainController extends HttpServlet {
                     } catch (Exception e) {
                         System.out.println("e.toString");
                     }
-                    }} 
+                    }
                 }
             }
         } catch (Exception e) {

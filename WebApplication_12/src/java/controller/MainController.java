@@ -128,17 +128,17 @@ public class MainController extends HttpServlet {
                             checkError = true;
                             request.setAttribute("txtAuthor_error", "Author cannot be empty !");
                         }
-                        if(publishYear < 0){
+                        if(publishYear <= 0){
                             checkError = true;
                             request.setAttribute("txtPublishYear_error", "PublishYear must be greater than zero !");
                         }
-                        if(price < 0){
+                        if(price <= 0){
                             checkError = true;
                             request.setAttribute("txtPrice_error", "Price must be greater than zero !");
                         }
                         if(quantity < 0){
                             checkError = true;
-                            request.setAttribute("txtQuantity_error", "Quantity must be greater than zero !");
+                            request.setAttribute("txtQuantity_error", "Quantity must be must be greater than or equal to 0 !");
                         }
 
                         BookDTO book = new BookDTO(bookID, title, author, publishYear, price, quantity);
@@ -155,12 +155,7 @@ public class MainController extends HttpServlet {
                     } catch (Exception e) {
                         System.out.println("e.toString");
                     }
-                 
                 }
-                
-                
-                
-                
             }
         } catch (Exception e) {
             log("Error at MainController : " + e.toString());
