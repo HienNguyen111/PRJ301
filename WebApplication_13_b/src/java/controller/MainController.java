@@ -16,165 +16,196 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import utils.AuthUtils;
 
-
 @WebServlet(name = "MainController", urlPatterns = {"/MainController"})
 public class MainController extends HttpServlet {
-    
+
     // Khai báo trang ban đầu là login.jsp
     private static final String LOGIN_PAGE = "login.jsp";
-    
+
     private BookDAO bookDAO = new BookDAO();
-    
-    
-    // Tạo hàm search:
-    protected void search(HttpServletRequest request, HttpServletResponse response)
+
+    // Tạo hàm nhỏ trong Main:
+    public String processSearch(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        String searchTerm = request.getParameter("searchTerm");
-        if(searchTerm == null){
-            searchTerm = "";
+        String url = LOGIN_PAGE;
+
+        // Cần đăng nhập mới search được
+        HttpSession session = request.getSession();
+        if (AuthUtils.isLoggedIn(session)) {
+            String searchTerm = request.getParameter("searchTerm");
+            if (searchTerm == null) {
+                searchTerm = "";
+            }
+            List<BookDTO> books = bookDAO.searchByTitle2(searchTerm);
+            // Truyền list books(ở trên) sang search.jsp
+            request.setAttribute("books", books);
+            // Truyền lại searchTerm
+            request.setAttribute("searchTerm", searchTerm);
         }
-        List<BookDTO> books = bookDAO.searchByTitle2(searchTerm);
-        // Truyền list books(ở trên) sang search.jsp
-        request.setAttribute("books", books);
-        // Truyền lại searchTerm
-        request.setAttribute("searchTerm", searchTerm);
+        return url;
     }
-    
+
+    private String processLogin(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String url = LOGIN_PAGE;
+        //
+        String strUserID = request.getParameter("txtUserID");
+        String strPassword = request.getParameter("txtPassword");
+
+        if (AuthUtils.isValidLogin(strUserID, strPassword)) {
+            url = "search.jsp";
+            // In tên của người đăng nhập ra
+            UserDTO user = AuthUtils.getUser(strUserID);
+            request.getSession().setAttribute("user", user);
+            // search: Hiện sách khi đăng nhập thành công
+            processSearch(request, response);
+        } else {
+            // In ra dòng thông báo lỗi
+            request.setAttribute("message", "Incorrect UserID or Password !");
+            // Quay trở lại trang login
+            url = "login.jsp";
+        //
+        } 
+        return url;
+    }
+
+    private String processLogout(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String url = LOGIN_PAGE;
+        //
+        HttpSession session = request.getSession();
+        if (AuthUtils.isLoggedIn(session)) {
+            request.getSession().invalidate(); // Hủy bỏ session
+            url = "login.jsp";
+        }
+        //
+        return url;
+    }
+
+    private String processDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String url = LOGIN_PAGE;
+        //
+        // Cần quyền ADMIN để xóa
+        HttpSession session = request.getSession();
+        if (AuthUtils.isAdmin(session)) {
+            String id = request.getParameter("id"); // Lấy BookID (ở search.jsp) để delete
+            bookDAO.updateQuantityToZero(id);
+
+            // search
+            processSearch(request, response);
+            url = "search.jsp";
+        }
+        //
+        return url;
+    }
+
+    private String processAdd(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String url = LOGIN_PAGE;
+        //
+        // Cần quyền ADMIN để thêm sách
+        HttpSession session = request.getSession();
+        if (AuthUtils.isAdmin(session)) {
+
+            try {
+                String bookID = request.getParameter("txtBookID");
+                String title = request.getParameter("txtTitle");
+                String author = request.getParameter("txtAuthor");
+                int publishYear = Integer.parseInt(request.getParameter("txtPublishYear"));
+                double price = Double.parseDouble(request.getParameter("txtPrice"));
+                int quantity = Integer.parseInt(request.getParameter("txtQuantity"));
+
+                // Kiểm tra xem có lỗi ko
+                Boolean checkError = false;
+
+                if (bookID == null || bookID.trim().isEmpty()) {
+                    checkError = true;
+                    request.setAttribute("txtBookID_error", "BookID cannot be empty !");
+                }
+                if (title == null || title.trim().isEmpty()) {
+                    checkError = true;
+                    request.setAttribute("txtTitle_error", "Title cannot be empty !");
+                }
+                if (author == null || author.trim().isEmpty()) {
+                    checkError = true;
+                    request.setAttribute("txtAuthor_error", "Author cannot be empty !");
+                }
+                if (publishYear <= 0) {
+                    checkError = true;
+                    request.setAttribute("txtPublishYear_error", "PublishYear must be greater than zero !");
+                }
+                if (price <= 0) {
+                    checkError = true;
+                    request.setAttribute("txtPrice_error", "Price must be greater than zero !");
+                }
+                if (quantity < 0) {
+                    checkError = true;
+                    request.setAttribute("txtQuantity_error", "Quantity must be must be greater than or equal to 0 !");
+                }
+
+                BookDTO book = new BookDTO(bookID, title, author, publishYear, price, quantity);
+
+                if (checkError == false) {
+                    bookDAO.create(book);
+                    // search
+                    url = processSearch(request, response);
+                } else {
+                    url = "bookForm.jsp";
+                    request.setAttribute("book", book);
+                }
+            } catch (Exception e) {
+                System.out.println("e.toString");
+            }
+        }
+        //
+        return url;
+    }
+
     // Main:
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
+
         String url = LOGIN_PAGE;
         try {
             String action = request.getParameter("action");
-            if(action == null){
+            if (action == null) {
                 url = LOGIN_PAGE;
-            }else{
-                
+            } else {
+
                 // Các action:
-                // Đăng nhập
-                if(action.equals("login")){
-                    String strUserID = request.getParameter("txtUserID");
-                    String strPassword = request.getParameter("txtPassword");
-                    
-                    if(AuthUtils.isValidLogin(strUserID, strPassword)){
-                        url = "search.jsp";
-                        // In tên của người đăng nhập ra
-                        UserDTO user = AuthUtils.getUser(strUserID);
-                        request.getSession().setAttribute("user", user);
-                        // search: Hiện sách khi đăng nhập thành công
-                        search(request, response);
-                    }else{
-                        // In ra dòng thông báo lỗi
-                        request.setAttribute("message", "Incorrect UserID or Password !");
-                        // Quay trở lại trang login
-                        url = "login.jsp";
-                    }
-                    
-                // Thoát    
-                }else if(action.equals("logout")){
-                    // Cần đăng nhập mới logout được
-                    HttpSession session = request.getSession();
-                    if(AuthUtils.isLoggedIn(session)){ 
-                    request.getSession().invalidate(); // Hủy session = Hủy 1 phiên làm việc
-                    url = "login.jsp";
-                    }
-                    
-                // Tìm sách
-                }else if(action.equals("search")){
-                    // Cần đăng nhập mới search được
-                    HttpSession session = request.getSession();
-                    if(AuthUtils.isLoggedIn(session)){
-                    // search
-                    search(request, response);
-                    url = "search.jsp";
-                    }
-                    
-                // Xóa sách
-                }else if(action.equals("delete")){
-                    // Cần quyền ADMIN để xóa
-                    HttpSession session = request.getSession();
-                    if(AuthUtils.isAdmin(session)){
-                        
-                    String id = request.getParameter("id"); // Lấy BookID (ở search.jsp) để delete
-                    bookDAO.updateQuantityToZero(id); 
-                    
-                    // search
-                    search(request, response);
-                    url = "search.jsp";
-                    }
-                    
-                // Thêm sách
-                }else if(action.equals("add_book")){
-                    // Cần quyền ADMIN để thêm sách
-                    HttpSession session = request.getSession();
-                    if(AuthUtils.isAdmin(session)){
-                        
-                    try {
-                        String bookID = request.getParameter("txtBookID");
-                        String title = request.getParameter("txtTitle");
-                        String author = request.getParameter("txtAuthor");
-                        int publishYear = Integer.parseInt(request.getParameter("txtPublishYear"));
-                        double price = Double.parseDouble(request.getParameter("txtPrice"));
-                        int quantity = Integer.parseInt(request.getParameter("txtQuantity"));
+                    // Đăng nhập
+                if (action.equals("login")) {
+                    url = processLogin(request, response);
 
-                        // Kiểm tra xem có lỗi ko
-                        Boolean checkError = false;
+                    // Thoát    
+                } else if (action.equals("logout")) {
+                    url = processLogout(request, response);
 
-                        if(bookID == null || bookID.trim().isEmpty()){
-                            checkError = true;
-                            request.setAttribute("txtBookID_error", "BookID cannot be empty !");
-                        }
-                        if(title == null || title.trim().isEmpty()){
-                            checkError = true;
-                            request.setAttribute("txtTitle_error", "Title cannot be empty !");
-                        }
-                        if(author == null || author.trim().isEmpty()){
-                            checkError = true;
-                            request.setAttribute("txtAuthor_error", "Author cannot be empty !");
-                        }
-                        if(publishYear <= 0){
-                            checkError = true;
-                            request.setAttribute("txtPublishYear_error", "PublishYear must be greater than zero !");
-                        }
-                        if(price <= 0){
-                            checkError = true;
-                            request.setAttribute("txtPrice_error", "Price must be greater than zero !");
-                        }
-                        if(quantity < 0){
-                            checkError = true;
-                            request.setAttribute("txtQuantity_error", "Quantity must be must be greater than or equal to 0 !");
-                        }
+                    // Tìm sách
+                } else if (action.equals("search")) {
+                    url = processSearch(request, response);
 
-                        BookDTO book = new BookDTO(bookID, title, author, publishYear, price, quantity);
-                        
-                        if(checkError == false){
-                            bookDAO.create(book);
-                            // search
-                            search(request, response);
-                            url = "search.jsp";
-                        }else{
-                            url = "bookForm.jsp";
-                            request.setAttribute("book", book);
-                        }
-                    } catch (Exception e) {
-                        System.out.println("e.toString");
-                    }
-                    }
+                    // Xóa sách
+                } else if (action.equals("delete")) {
+                    url = processDelete(request, response);
+
+                    // Thêm sách
+                } else if (action.equals("add_book")) {
+                    url = processAdd(request, response);
+                    
                 }
             }
         } catch (Exception e) {
             log("Error at MainController : " + e.toString());
         } finally {
-            
+
             // Cách chuyển trang trên trang Web
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
         }
-        
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

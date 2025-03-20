@@ -175,7 +175,7 @@
         
         <div class="page-content">
             <% if(AuthUtils.isLoggedIn(session)){
-                UserDTO user = (UserDTO) session.getAttribute("user");
+                UserDTO user = AuthUtils.getUser(session);
                 if(AuthUtils.isAdmin(session)){
             %>
                                 

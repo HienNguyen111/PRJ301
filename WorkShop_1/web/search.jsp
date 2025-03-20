@@ -152,6 +152,7 @@
                 searchTerm = searchTerm.equals("null") ?"" :searchTerm;
             %>
             
+            <% if(AuthUtils.isAdmin(session)){ %>
             <div class="search-section">
                 <form action="MainController">
                     <input type="hidden" name="action" value="search"/>
@@ -160,6 +161,7 @@
                     <input type="submit" value="Search" class="search-btn"/>
                 </form>
             </div>
+            <% } %>
              
             <% if(AuthUtils.isAdmin(session)){ %>
                 <a href="projectForm.jsp" style="display: inline-flex; align-items: center; text-decoration: none; padding: 8px 12px; background-color: #FAD105; color: white; border-radius: 5px; font-weight: bold; transition: 0.3s;">
@@ -222,8 +224,7 @@
                                             <button type="submit" style="border: none; background: none; cursor: pointer;">
                                                 <img src="assets/images/fix.png" style="height: 25px; display: block; margin: auto;">
                                             </button>
-                                           
-                      
+
                                             </form>
                                         </td>
                                         <% } %>

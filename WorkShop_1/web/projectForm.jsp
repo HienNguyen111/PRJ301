@@ -136,6 +136,10 @@
                 margin-top: 0;
             }
             
+            .error-container p {
+                text-align: center;
+            }
+            
             .back-link {
                 display: block;
                 text-align: center;
