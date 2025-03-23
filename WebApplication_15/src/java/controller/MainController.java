@@ -284,7 +284,7 @@ public class MainController extends HttpServlet {
                     // Edit sách         
                 } else if (action.equals("edit")) {
                     url = processEdit(request, response);
-                    // Sau kih edit thêm thông tin thì update
+                    // Sau khi edit thêm thông tin thì update
                 } else if (action.equals("update")) {
                     url = processUpdate(request, response);
                 }

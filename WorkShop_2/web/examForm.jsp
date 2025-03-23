@@ -295,13 +295,13 @@
                 </div>
             </form>
 
-            <a href="MainController?action=backToDashBroad" class="back-link">Back to Dash Broad</a>
+            <a href="MainController?action=backToDashBoard" class="back-link">Back to DashBoard</a>
             </div>
             <%} else {%>
             <div class="form-container error-container">
                 <h1>403 Error</h1>
                 <p>You do not have permission to access this content!</p>
-                <a href="MainController?action=backToDashBroad" class="back-link">Back to Dash Broad</a>
+                <a href="MainController?action=backToDashBoard" class="back-link">Back to DashBoard</a>
             </div>
             <%}
                 } else {%>

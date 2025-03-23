@@ -98,7 +98,7 @@ public class BookDAO implements IDAO<BookDTO, String> {
     public boolean update(BookDTO entity) {
         String sql = "UPDATE tblBooks SET "
                 + " Title=?, Author=?, PublishYear=?, Price=?, Quantity=?, Image=? "
-                + "  WHERE BookID=?";
+                + " WHERE BookID=?";
         try {
             Connection conn = DBUtils.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
