@@ -41,6 +41,7 @@ public class MainController extends HttpServlet {
             request.setAttribute("books", books);
             // Truyền lại searchTerm
             request.setAttribute("searchTerm", searchTerm);
+            url = "search.jsp";
         }
         return url;
     }

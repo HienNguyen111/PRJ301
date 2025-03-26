@@ -109,17 +109,6 @@
             box-shadow: 0 0 5px #FAD105;
         }
 
-        /* Responsive design */
-        @media screen and (max-width: 600px) {
-            .book-table {
-                font-size: 12px;
-            }
-
-            .book-table thead th,
-            .book-table tbody td {
-                padding: 8px 10px;
-            }
-        }
 
     </style> 
 
